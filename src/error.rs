@@ -48,7 +48,7 @@ pub enum Error {
     InvalidPngData,
     #[cfg(feature = "http")]
     #[error(transparent)]
-    Request(#[from] reqwest::Error),
+    Request(#[from] Box<ureq::Error>),
     #[cfg(feature = "toml")]
     #[error(transparent)]
     TomlDeserialization(#[from] toml_dep::de::Error),
@@ -61,6 +61,8 @@ pub enum Error {
     #[cfg(feature = "hash")]
     #[error("Unable to decode hex value.")]
     HexDecode,
+    #[error("Panic during function execution: {0}")]
+    Panic(String),
 }
 
 impl From<Utf8Error> for Error {

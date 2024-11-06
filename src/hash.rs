@@ -18,6 +18,10 @@ byond_fn!(fn hash_string(algorithm, string) {
     string_hash(algorithm, string).ok()
 });
 
+byond_fn!(fn decode_base64(string) {
+    Some(base64::prelude::BASE64_STANDARD.decode(string).unwrap())
+});
+
 byond_fn!(fn hash_file(algorithm, string) {
     file_hash(algorithm, string).ok()
 });
@@ -67,16 +71,21 @@ fn hash_algorithm<B: AsRef<[u8]>>(name: &str, bytes: B) -> Result<String> {
             hasher.write(bytes.as_ref());
             Ok(format!("{:x}", hasher.finish()))
         }
+        "xxh64_fixed" => {
+            let mut hasher = XxHash64::with_seed(17479268743136991876); // this seed is just a random number that should stay the same between builds and runs
+            hasher.write(bytes.as_ref());
+            Ok(format!("{:x}", hasher.finish()))
+        }
         "base64" => Ok(base64::prelude::BASE64_STANDARD.encode(bytes.as_ref())),
         _ => Err(Error::InvalidAlgorithm),
     }
 }
 
-fn string_hash(algorithm: &str, string: &str) -> Result<String> {
+pub fn string_hash(algorithm: &str, string: &str) -> Result<String> {
     hash_algorithm(algorithm, string)
 }
 
-fn file_hash(algorithm: &str, path: &str) -> Result<String> {
+pub fn file_hash(algorithm: &str, path: &str) -> Result<String> {
     let mut bytes: Vec<u8> = Vec::new();
     let mut file = BufReader::new(File::open(path)?);
     file.read_to_end(&mut bytes)?;
@@ -93,7 +102,7 @@ fn totp_generate_tolerance(
 ) -> Result<String> {
     let mut results: Vec<String> = Vec::new();
     for i in -tolerance..(tolerance + 1) {
-        let result = totp_generate(hex_seed, i.try_into().unwrap(), time_override)?;
+        let result = totp_generate(hex_seed, i.into(), time_override)?;
         results.push(result)
     }
     Ok(serde_json::to_string(&results)?)

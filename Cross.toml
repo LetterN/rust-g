@@ -8,4 +8,3 @@ image = "rustg/i686-unknown-linux-gnu"
 passthrough = [
 	"PKG_CONFIG_ALLOW_CROSS"
 ]
-

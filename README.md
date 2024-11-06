@@ -77,6 +77,9 @@ cargo build --release --target i686-unknown-linux-gnu
 
 Windows:
 
+If you are using Visual Studio Code, you may use the `CONTROL + SHIFT + B` hotkey and run the `rust: cargo build (win32)` task.
+
+Alternatively:
 ```sh
 cargo build --release --target i686-pc-windows-msvc
 # output: target/i686-pc-windows-msvc/release/rust_g.dll
@@ -104,9 +107,12 @@ The default features are:
 * url: Faster replacements for `url_encode` and `url_decode`.
 
 Additional features are:
+* allow_non_32bit: Disables the forced compile errors on non-32bit targets. Only use this if you know exactly what you are doing.
 * batchnoise: Discrete Batched Perlin-like Noise, fast and multi-threaded - sent over once instead of having to query for every tile.
 * hash: Faster replacement for `md5`, support for SHA-1, SHA-256, and SHA-512. Requires OpenSSL on Linux.
+* iconforge: A much faster replacement for the spritesheet generation system used by [/tg/station].
 * pathfinder: An a* pathfinder used for finding the shortest path in a static node map. Not to be used for a non-static map.
+* poissonnoise: A way to generate a 2D poisson disk distribution ('blue noise'), which is relatively uniform.
 * redis_pubsub: Library for sending and receiving messages through Redis.
 * redis_reliablequeue: Library for using a reliable queue pattern through Redis.
 * unzip: Function to download a .zip from a URL and unzip it to a directory.
@@ -178,6 +184,11 @@ open("rust_g", O_RDONLY|O_CLOEXEC)      = 4
 # After that it goes back to the scanning from startup.
 open("rust_g", O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|O_CLOEXEC) = -1 ENOTDIR (Not a directory)
 ```
+
+### Windows 7
+rust-g releases for Windows 7 targets by default and can support building for Windows 7 using the [Tier 3 Windows 7 Rust targets](https://doc.rust-lang.org/rustc/platform-support/win7-windows-msvc.html). You can build for Windows 7 targets by using nightly and building with `cargo +nightly build -Z build-std --target i686-win7-windows-msvc`.
+
+---
 
 If you're still having problems, ask in the [Coderbus Discord]'s
 `#tooling-questions` channel.
